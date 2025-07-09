@@ -8,11 +8,7 @@ require("dotenv").config();
 app.listen(port);
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: ["https://cfl-ten.vercel.app", "https://cflartservices.com"],
-  })
-);
+app.use(cors());
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
