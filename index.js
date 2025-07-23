@@ -3,6 +3,8 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 3000;
 const nodemailer = require("nodemailer");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 require("dotenv").config();
 
 app.listen(port);
