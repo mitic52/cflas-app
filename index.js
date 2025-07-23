@@ -138,3 +138,7 @@ Description: ${item.description}\n\n`;
     res.status(500).json({ error: "Email failed to send" });
   }
 });
+
+app.get("/test", (req, res) => {
+  res.send("Received successfully!");
+});
