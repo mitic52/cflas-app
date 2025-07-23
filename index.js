@@ -34,6 +34,7 @@ app.post("/enquiry", (req, res) => {
 });
 
 app.post("/estimate", async (req, res) => {
+  console.log(req.body);
   const jsonData = JSON.parse(req.body.data);
   const file = req.file;
   const mailOptions = {
