@@ -10,7 +10,14 @@ require("dotenv").config();
 app.listen(port);
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({ origin: ["https://cfl-ten.vercel.app"] }));
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // or specific origin
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -101,9 +108,10 @@ ${jsonData.storageInsurance == "true" ? `Declared value for storage: ${jsonData.
 
 ${jsonData.inventory.length > 0 ? "Inventory" : ""}
 
-${jsonData.inventory.length > 0
+${
+  jsonData.inventory.length > 0
     ? `${jsonData.inventory.map((item) => {
-return `Type: ${item.type}, Medium: ${item.medium}, Quantity: ${item.quantity}
+        return `Type: ${item.type}, Medium: ${item.medium}, Quantity: ${item.quantity}
 Width: ${item.dimensions.width}, Height: ${item.dimensions.height}, Length: ${item.dimensions.length}, Weight: ${item.dimensions.weight}
 Description: ${item.description}\n\n`;
       })}`
