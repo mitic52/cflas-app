@@ -1,16 +1,13 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const port = process.env.PORT || 3000;
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-app.listen(port);
-app.use(express.json());
+app.use(express.json({ limit: "10mb" })); // Increase limit for base64 files
+app.use(cors());
 
-app.use(cors({ origin: ["https://cfl-ten.vercel.app"] }));
-
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransporter({
   service: "gmail",
   auth: {
     user: "n81058538@gmail.com",
@@ -28,24 +25,35 @@ app.post("/enquiry", (req, res) => {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      return console.error("Error:", error);
+      console.error("Error:", error);
+      return res.status(500).json({ error: "Email failed to send" });
     }
+    res.json({ success: true });
   });
 });
 
 app.post("/estimate", async (req, res) => {
-  console.log(req.body);
-  const jsonData = JSON.parse(req.body.data);
-  const file = req.file;
-  const mailOptions = {
-    from: "n81058538@gmail.com",
-    to: "miticnemanja223@gmail.com",
-    subject: `New Estimate Received`,
-    text: `Name: ${jsonData.clientsInfo.name}, Surname: ${jsonData.clientsInfo.surname}\n
+  try {
+    console.log("Request received");
+
+    const { data, file } = req.body;
+
+    if (!data) {
+      return res.status(400).json({ error: "Missing data in request body" });
+    }
+
+    // Parse the data (it might already be an object or a JSON string)
+    const jsonData = typeof data === "string" ? JSON.parse(data) : data;
+
+    const mailOptions = {
+      from: "n81058538@gmail.com",
+      to: "miticnemanja223@gmail.com",
+      subject: `New Estimate Received`,
+      text: `Name: ${jsonData.clientsInfo.name}, Surname: ${jsonData.clientsInfo.surname}\n
 Company: ${jsonData.clientsInfo.company}\n
 Street address: ${jsonData.clientsInfo.streetAddress}, City: ${jsonData.clientsInfo.city}, State: ${jsonData.clientsInfo.state}, ZIP Code: ${
-      jsonData.clientsInfo.zip
-    }\n
+        jsonData.clientsInfo.zip
+      }\n
 Apt, Room, Office: ${jsonData.clientsInfo.apt}\n
 Phone number: ${jsonData.clientsInfo.phone}, Email: ${jsonData.clientsInfo.email}, Fax: ${jsonData.clientsInfo.fax}\n
            
@@ -112,25 +120,21 @@ Description: ${item.description}\n\n`;
     `}`
     : ""
 }`,
-    attachments: file
-      ? [
-          {
-            filename: file.originalname,
-            path: file.path,
-          },
-        ]
-      : [],
-  };
+      attachments:
+        file && file.content && file.name
+          ? [
+              {
+                filename: file.name,
+                content: Buffer.from(file.content, "base64"),
+              },
+            ]
+          : [],
+    };
 
-  try {
     await transporter.sendMail(mailOptions);
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Email failed to send" });
+    console.error("Error in /estimate endpoint:", err);
+    res.status(500).json({ error: "Email failed to send", details: err.message });
   }
-});
-
-app.get("/test", (req, res) => {
-  res.send("Received successfully!");
 });
