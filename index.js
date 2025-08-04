@@ -18,10 +18,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const receivers = ["miticnemanja223@gmail.com"];
+
 app.post("/enquiry", (req, res) => {
   const mailOptions = {
     from: "n81058538@gmail.com",
-    to: "miticnemanja223@gmail.com",
+    to: receivers,
     subject: `${req.body.nameSurname}`,
     text: `${req.body.message}\n\n${req.body.email}\n${req.body.phone}`,
   };
@@ -42,7 +44,7 @@ app.post("/estimate", async (req, res) => {
 
   const mailOptions = {
     from: "n81058538@gmail.com",
-    to: "miticnemanja223@gmail.com",
+    to: receivers,
     subject: `New Estimate Received`,
     text: `Name: ${jsonData.clientsInfo.name}, Surname: ${jsonData.clientsInfo.surname}\n
 Company: ${jsonData.clientsInfo.company}\n
