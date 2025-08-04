@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const receivers = "miticnemanja223@gmail.com, nemanja222mitic@gmail.com";
+const receivers = "miticnemanja223@gmail.com, ivandordevic@gmail.com";
 
 app.post("/enquiry", (req, res) => {
   const mailOptions = {
