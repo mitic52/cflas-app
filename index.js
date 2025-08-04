@@ -18,11 +18,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const receivers = "miticnemanja223@gmail.com";
+const receivers = "miticnemanja223@gmail.com, nemanja222mitic@gmail.com";
 
 app.post("/enquiry", (req, res) => {
   const mailOptions = {
-    from: "n81058538@gmail.com, nemanja222mitic@gmail.com",
+    from: "n81058538@gmail.com",
     to: receivers,
     subject: `${req.body.nameSurname}`,
     text: `${req.body.message}\n\n${req.body.email}\n${req.body.phone}`,
